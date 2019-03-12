@@ -38,11 +38,11 @@ public class Player : MonoBehaviour
         float move = Input.GetAxisRaw("Horizontal");
         if (move < 0)
         {
-            _playerSprite.flipX = true;
+            Flip(false);
         }
         else if (move > 0)
         {
-            _playerSprite.flipX = false;
+            Flip(true);
         }
 
         if (Input.GetKeyDown(KeyCode.Space) && IsGrounded() == true)
@@ -64,6 +64,18 @@ public class Player : MonoBehaviour
             return true;
         }
         return false;
+    }
+
+    private void Flip(bool flip)
+    {
+        if (flip == true)
+        {
+            _playerSprite.flipX = true;
+        }
+        else if (flip == false)
+        {
+            _playerSprite.flipX = false;
+        }
     }
 
     private IEnumerator ResetJumpRoutine()
