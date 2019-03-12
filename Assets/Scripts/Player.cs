@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,9 +15,14 @@ public class Player : MonoBehaviour
 
     private bool _resetJump = false;
 
+    private PlayerAnimation _playerAnim;
+    private SpriteRenderer _playerSprite;
+
     private void Start()
     {
         _rb = GetComponent<Rigidbody2D>();
+        _playerAnim = GetComponent<PlayerAnimation>();
+        _playerSprite = GetComponentInChildren<SpriteRenderer>();
     }
 
     // Update is called once per frame
@@ -31,13 +36,23 @@ public class Player : MonoBehaviour
     private void Movement()
     {
         float move = Input.GetAxisRaw("Horizontal");
-        _rb.velocity = new Vector2(move * _playerSpeed, _rb.velocity.y);
+        if (move < 0)
+        {
+            _playerSprite.flipX = true;
+        }
+        else if (move > 0)
+        {
+            _playerSprite.flipX = false;
+        }
 
         if (Input.GetKeyDown(KeyCode.Space) && IsGrounded() == true)
         {
             _rb.velocity = new Vector2(_rb.velocity.x, _jumpforce);
             StartCoroutine(ResetJumpRoutine());
         }
+        _rb.velocity = new Vector2(move * _playerSpeed, _rb.velocity.y);
+
+        _playerAnim.Move(move);
     }
 
     private bool IsGrounded()
