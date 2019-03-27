@@ -7,7 +7,7 @@ public class Player : MonoBehaviour
     private Rigidbody2D _rb;
 
     [SerializeField]
-    private readonly float _jumpforce = 5.0f;
+    private readonly float _jumpforce = 7.0f;
 
     [SerializeField]
     private readonly float _playerSpeed = 2.5f;
