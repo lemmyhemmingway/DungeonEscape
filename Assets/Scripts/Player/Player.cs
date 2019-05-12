@@ -1,8 +1,11 @@
 using System.Collections;
 using UnityEngine;
+using UnityStandardAssets.CrossPlatformInput;
 
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour, IDamageble
 {
+    public int diamonds;
+
     // Use this for initialization
     private Rigidbody2D _rb;
 
@@ -20,12 +23,15 @@ public class Player : MonoBehaviour
     private SpriteRenderer _playerSprite;
     private SpriteRenderer _swordArcSprite;
 
+    public int health { get; set; }
+
     private void Start()
     {
         _rb = GetComponent<Rigidbody2D>();
         _playerAnim = GetComponent<PlayerAnimation>();
         _playerSprite = GetComponentInChildren<SpriteRenderer>();
         _swordArcSprite = transform.GetChild(1).GetComponentInChildren<SpriteRenderer>();
+        health = 4;
     }
 
     // Update is called once per frame
@@ -35,7 +41,7 @@ public class Player : MonoBehaviour
         //_rb.MovePosition(_rb.position + Vector2.right * horizontal);
         Movement();
 
-        if (Input.GetMouseButtonDown(0) && IsGrounded() == true)
+        if (CrossPlatformInputManager.GetButtonDown("A_Button") && IsGrounded() == true)
         {
             _playerAnim.Attack();
         }
@@ -43,7 +49,7 @@ public class Player : MonoBehaviour
 
     private void Movement()
     {
-        float move = Input.GetAxisRaw("Horizontal");
+        float move = CrossPlatformInputManager.GetAxis("Horizontal"); // Input.GetAxisRaw("Horizontal");
         _grounded = IsGrounded();
         if (move < 0)
         {
@@ -54,7 +60,7 @@ public class Player : MonoBehaviour
             Flip(false);
         }
 
-        if (Input.GetKeyDown(KeyCode.Space) && IsGrounded() == true)
+        if ((Input.GetKeyDown(KeyCode.Space) || CrossPlatformInputManager.GetButtonDown("B_Button")) && IsGrounded() == true)
         {
             _rb.velocity = new Vector2(_rb.velocity.x, _jumpforce);
             StartCoroutine(ResetJumpRoutine());
@@ -107,5 +113,23 @@ public class Player : MonoBehaviour
         _resetJump = true;
         yield return new WaitForSeconds(0.1f);
         _resetJump = false;
+    }
+
+    public void Damage()
+    {
+        if (health < 1)
+            return;
+        health -= 1;
+        UIManager.Instance.UpdateLives(health);
+        if (health < 1)
+        {
+            _playerAnim.Death();
+        }
+    }
+
+    public void AddGems(int amount)
+    {
+        diamonds += amount;
+        UIManager.Instance.UpdateGemCount(diamonds);
     }
 }
